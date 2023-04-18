@@ -52,12 +52,34 @@ app.post("/urls", (req, res) => {
 
 app.get("/urls/:id", (req, res) => {
   const templateVars = { id: req.params.id, longURL: urlDatabase[req.params.id] };
-  res.render("urls_show", templateVars);
-})
+  res.render('urls_show', templateVars);
+});
 
 app.get("/u/:id", (req, res) => {
   const longURL = urlDatabase[req.params.id];
   res.redirect(longURL);
+});
+
+app.get('/urls/:id', (req, res) => {
+  const shortURL = req.params.id;
+  const templateVars = {
+    shortURL: shortURL,
+    longURL: urlDatabase[shortURL]
+  };
+
+  res.render('urls_show', templateVars);
+});
+
+// URL update route
+app.post('/urls/:id', (req, res) => {
+  const shortURL = req.params.id
+  const longUpdatedURL = req.body.longURL
+  
+  if(!shortURL) return res.status(403).send('Field cannot be empty')
+  
+  urlDatabase[shortURL] = longUpdatedURL
+
+  return res.redirect('/urls');
 });
 
 app.post('/urls/:id/delete', (req, res) => {
