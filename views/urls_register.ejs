@@ -2,6 +2,9 @@
 <html lang="en">
 
 <head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
     integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous" />
@@ -16,7 +19,15 @@
       <h5 class="card-title">User Registration</h5>
       <p class="card-text">
         <form method="POST" action="/register">
-          <input type="email" name="password" placeholder="yourname@email.com"/> <button type="submit" class="btn btn-primary">Sign Up</button>
+          <div>
+          <label for="emailInput">Email</label>
+          <input type="email" name="email" placeholder="yourname@email.com"/> 
+            </div>
+            <div>
+              <label for="password">Password</label>
+              <input type="password" name="password" placeholder="Enter your password"/>
+            </div>
+          <button type="submit" class="btn btn-primary">Sign Up</button>
         </form>
         </p>
     </div>
