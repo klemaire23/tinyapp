@@ -11,12 +11,12 @@ const urlDatabase = {
 };
 
 const users = {
-  abc: {
+  userRandomId: {
     id: "userRandomId",
     email: "a@a.com",
     password: "1234"
   },
-  def: {
+  user2RandomID: {
     id: "user2RandomID",
     email: "b@b.com",
     password: "5678"
@@ -51,6 +51,7 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
+  console.log(req.cookies.user_id);
   const templateVars = {
     urls: urlDatabase,
     user: users[req.cookies.user_id]
@@ -129,6 +130,7 @@ app.post('/login', (req, res) => {
 
   // lookup the user based on email provided
   let foundUser = null;
+
   for (const userId in users) {
     const user = users[userId];
     if (user.email === email) {
@@ -138,16 +140,12 @@ app.post('/login', (req, res) => {
   if (!foundUser) {
     return res.status(403).send('No user with that email found');
   }
+
   // does the provided password NOT match the one from the database?
   if (foundUser.password !== password) {
     return res.status(403).send('Passwords do not match');
   }
 
-  const templateVars = {
-    user: foundUser
-  };
-
-  res.render('urls_login', templateVars);
   res.cookie('user_id', foundUser.id);
   res.redirect('/urls');
 });
