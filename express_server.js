@@ -123,36 +123,40 @@ app.get('/login', (req, res) => {
 });
 
 app.post('/login', (req, res) => {
-  const user_id = users[req.cookies.user_id];
-  res.cookie('user_id', user_id);
+  const user_id = req.cookies.user_id;
+  const email = req.body.email;
+  const password = req.body.password;
+
+  // lookup the user based on email provided
+  let foundUser = null;
+  for (const userId in users) {
+    const user = users[userId];
+    if (user.email === email) {
+      foundUser = user;
+    }
+  }
+  if (!foundUser) {
+    return res.status(403).send('No user with that email found');
+  }
+  // does the provided password NOT match the one from the database?
+  if (foundUser.password !== password) {
+    return res.status(403).send('Passwords do not match');
+  }
+
+  const templateVars = {
+    user: foundUser
+  };
+
+  res.render('urls_login', templateVars);
+  res.cookie('user_id', foundUser.id);
   res.redirect('/urls');
 });
-// lookup the user based on email provided
-// let foundUser = null;
-// for (const userId of Object.keys(users)) {
-//   const user = users[userId];
-//   if (user.email === email) {
-//     foundUser = user;
-//   }
-// }
-// if (!foundUser) {
-//   return res.status(400).send('No user with that email found');
-// }
-// // does the provided password NOT match the one from the database?
-// if (foundUser.password !== password) {
-//   return res.status(400).send('Passwords do not match');
-// }
-
-// // happy path: user is who they are they are; now set cookie and redirect user
-// res.cookie('user_id', foundUser.id);
-// res.redirect('/urls');
-// console.log(users);
 
 // Logout functionality
 
 app.post('/logout', (req, res) => {
   res.clearCookie('user_id');
-  res.redirect('/urls');
+  res.redirect('/login');
 });
 
 // User Registration
@@ -191,6 +195,7 @@ app.post('/register', (req, res) => {
 
   res.cookie('user_id', user_id);
   res.redirect('/urls');
+
 });
 
 

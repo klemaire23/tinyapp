@@ -13,21 +13,27 @@
 
 <body>
   <%- include('partials/_header') %>
-  <div class="card text-center">
+  <div class="card text-left">
     <div class="card-header"></div>
     <div class="card-body">
-      <h5 class="card-title">Login</h5>
+      <h1 class="card-title">Login</h1>
       <p class="card-text">
         <form method="POST" action="/login">
           <div>
           <label for="emailInput">Email</label>
+          </div>
+          <div>
           <input type="email" name="email" placeholder="yourname@email.com"/> 
             </div>
             <div>
               <label for="password">Password</label>
+              </div>
+              <div>
               <input type="password" name="password" placeholder="Enter your password"/>
             </div>
+            <div>
           <button type="submit" class="btn btn-primary">Login</button>
+          </div>
         </form>
         </p>
     </div>
@@ -43,5 +49,4 @@ crossorigin="anonymous"></script>
 integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
 crossorigin="anonymous"></script>
 </body>
-
 </html>

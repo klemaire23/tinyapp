@@ -13,21 +13,27 @@
 
 <body>
   <%- include('partials/_header') %>
-  <div class="card text-center">
+  <div class="card text-left">
     <div class="card-header"></div>
     <div class="card-body">
-      <h5 class="card-title">User Registration</h5>
+      <h1 class="card-title">Create Account</h1>
       <p class="card-text">
         <form method="POST" action="/register">
           <div>
           <label for="emailInput">Email</label>
+          </div>
+          <div>
           <input type="email" name="email" placeholder="yourname@email.com"/> 
             </div>
             <div>
               <label for="password">Password</label>
+              </div>
+              <div>
               <input type="password" name="password" placeholder="Enter your password"/>
             </div>
-          <button type="submit" class="btn btn-primary">Sign Up</button>
+            <div>
+          <button type="submit" class="btn btn-primary">Register</button>
+          </div>
         </form>
         </p>
     </div>
