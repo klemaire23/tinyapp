@@ -114,9 +114,10 @@ app.post('/login', (req, res) => {
   res.redirect('/urls');
 });
 
+// Logout functionality
+
 app.post('/logout', (req, res) => {
-  const username = req.body.username
-  res.cookie('username', '');
+  res.clearCookie('username');
   res.redirect('/urls');
 });
 
