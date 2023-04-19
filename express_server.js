@@ -99,7 +99,7 @@ app.post('/urls/:id/delete', (req, res) => {
   res.redirect('/urls');
 });
 
-// Adding Cookies
+// Adding Cookies and Setting Up Login
 
 app.get('/login', (req, res) => {
   const templateVars = {
