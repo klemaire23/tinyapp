@@ -29,7 +29,6 @@ const users = {
   },
 };
 
-
 const generateRandomString = function(length) {
   const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let newShortURL = '';
@@ -66,6 +65,8 @@ app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
+// GET route for My URLs page 
+
 app.get("/urls", (req, res) => {
   const user_id = req.cookies.user_id;
 
@@ -78,6 +79,8 @@ app.get("/urls", (req, res) => {
   };
   return res.render("urls_index", templateVars);
 });
+
+// GET and POST routes for accessing and using New URLs page 
 
 app.get("/urls/new", (req, res) => {
   const user_id = req.cookies.user_id;
@@ -105,6 +108,8 @@ app.post("/urls", (req, res) => {
   };
   return res.redirect(`/urls/${id}`);
 });
+
+// GET routes to shortURLs page
 
 app.get("/urls/:id", (req, res) => {
   const user_id = req.cookies.user_id;
@@ -135,104 +140,7 @@ app.get("/u/:id", (req, res) => {
 
 });
 
-app.get('/urls/:id', (req, res) => {
-  const shortURL = req.params.id;
-  const templateVars = {
-    shortURL: shortURL,
-    longURL: urlDatabase[shortURL]
-  };
-
-  res.render('urls_show', templateVars);
-});
-
-// URL update route
-app.post('/urls/:id', (req, res) => {
-  const user_id = req.cookies.user_id;
-  const shortURL = req.params.id;
-  const longUpdatedURL = req.body.longURL;
-  const urlDatabaseKeys = urlDatabase[req.params.id];
-
-  console.log("CHECK:", longUpdatedURL);
-  console.log("SHORTURL:", urlDatabase[shortURL]);
-  
-
-  if (!shortURL) {
-    return res.status(403).send('Field cannot be empty');
-
-  } else if (!user_id) {
-    return res.status(401).send('You are not authorized to view this page. Please sign in or register');
-
-  } else if (user_id !== urlDatabaseKeys.userID) {
-    return res.status(401).send('You are not authorized to edit this URL');
-  }
-
-  urlDatabase[shortURL].longURL = longUpdatedURL;
-
-  return res.redirect('/urls');
-});
-
-app.post('/urls/:id/delete', (req, res) => {
-  const urlDatabaseKeys = urlDatabase[req.params.id];
-  const user_id = req.cookies.user_id;
-
-  if (!user_id) {
-    return res.status(401).send('You are not authorized to view this page. Please sign in or register');
-    
-  } else if (user_id !== urlDatabaseKeys.userID) {
-    return res.status(401).send('You are not authorized to delete this URL');
-  }
-  delete urlDatabase[req.params.id];
-  res.redirect('/urls');
-});
-
-// Adding Cookies and Setting Up Login
-
-app.get('/login', (req, res) => {
-  const user_id = req.cookies.user_id;
-  const templateVars = {
-    user: users[req.cookies.user_id]
-  };
-
-  if (user_id) {
-    return res.redirect('/urls');
-  }
-  res.render('urls_login', templateVars);
-});
-
-app.post('/login', (req, res) => {
-  const email = req.body.email;
-  const password = req.body.password;
-
-  // lookup the user based on email provided
-  let foundUser = null;
-
-  for (const userId in users) {
-    const user = users[userId];
-    if (user.email === email) {
-      foundUser = user;
-    }
-  }
-  if (!foundUser) {
-    return res.status(403).send('No user with that email found');
-  }
-
-  // does the provided password NOT match the one from the database?
-  if (foundUser.password !== password) {
-    return res.status(403).send('Passwords do not match');
-  }
-
-  res.cookie('user_id', foundUser.id);
-  res.redirect('/urls');
-});
-
-// Logout functionality
-
-app.post('/logout', (req, res) => {
-  res.clearCookie('user_id');
-  res.redirect('/login');
-});
-
-// User Registration
+// GET and POST routes  for registering a new user
 
 app.get('/register', (req, res) => {
   const user_id = req.cookies.user_id;
@@ -277,7 +185,91 @@ app.post('/register', (req, res) => {
 
 });
 
+// GET and POST routes for Login, including setting cookies
 
+app.get('/login', (req, res) => {
+  const user_id = req.cookies.user_id;
+  const templateVars = {
+    user: users[req.cookies.user_id]
+  };
+
+  if (user_id) {
+    return res.redirect('/urls');
+  }
+  res.render('urls_login', templateVars);
+});
+
+app.post('/login', (req, res) => {
+  const email = req.body.email;
+  const password = req.body.password;
+
+  // lookup the user based on email provided
+  let foundUser = null;
+
+  for (const userId in users) {
+    const user = users[userId];
+    if (user.email === email) {
+      foundUser = user;
+    }
+  }
+  if (!foundUser) {
+    return res.status(403).send('No user with that email found');
+  }
+
+  // does the provided password NOT match the one from the database?
+  if (foundUser.password !== password) {
+    return res.status(403).send('Passwords do not match');
+  }
+
+  res.cookie('user_id', foundUser.id);
+  res.redirect('/urls');
+});
+
+// POST route for Logout
+
+app.post('/logout', (req, res) => {
+  res.clearCookie('user_id');
+  res.redirect('/login');
+});
+
+// POST route to edit/update URLs 
+
+app.post('/urls/:id', (req, res) => {
+  const user_id = req.cookies.user_id;
+  const shortURL = req.params.id;
+  const longUpdatedURL = req.body.longURL;
+  const urlDatabaseKeys = urlDatabase[req.params.id];
+
+  if (!shortURL) {
+    return res.status(403).send('Field cannot be empty');
+
+  } else if (!user_id) {
+    return res.status(401).send('You are not authorized to view this page. Please sign in or register');
+
+  } else if (user_id !== urlDatabaseKeys.userID) {
+    return res.status(401).send('You are not authorized to edit this URL');
+  }
+
+  urlDatabase[shortURL].longURL = longUpdatedURL;
+
+  return res.redirect('/urls');
+});
+
+// POST route to delete URLs
+
+app.post('/urls/:id/delete', (req, res) => {
+  const urlDatabaseKeys = urlDatabase[req.params.id];
+  const user_id = req.cookies.user_id;
+
+  if (!user_id) {
+    return res.status(401).send('You are not authorized to view this page. Please sign in or register');
+
+  } else if (user_id !== urlDatabaseKeys.userID) {
+    return res.status(401).send('You are not authorized to delete this URL');
+  }
+  delete urlDatabase[req.params.id];
+  res.redirect('/urls');
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
