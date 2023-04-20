@@ -4,7 +4,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-
+  <style>
+    .form-label {
+      margin-top: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+  </style>
+  <style>
+    .form-submit {
+      margin-top: 1rem;
+    }
+  </style>
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
     integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous" />
@@ -13,41 +23,41 @@
 
 <body>
   <%- include('partials/_header') %>
-  <div class="card text-left">
-    <div class="card-header"></div>
-    <div class="card-body">
-      <h1 class="card-title">Create Account</h1>
-      <p class="card-text">
+    <div class="card text-left">
+      <div class="card-header"></div>
+      <div class="card-body">
+        <h1 class="card-title">Create Account</h1>
+        <p class="card-text">
         <form method="POST" action="/register">
           <div>
-          <label for="emailInput">Email</label>
+            <label for="emailInput" class="form-label">Email</label>
           </div>
           <div>
-          <input type="email" name="email" placeholder="yourname@email.com"/> 
-            </div>
-            <div>
-              <label for="password">Password</label>
-              </div>
-              <div>
-              <input type="password" name="password" placeholder="Enter your password"/>
-            </div>
-            <div>
-          <button type="submit" class="btn btn-primary">Register</button>
+            <input type="email" name="email" placeholder="yourname@email.com" />
+          </div>
+          <div>
+            <label for="password" class="form-label">Password</label>
+          </div>
+          <div>
+            <input type="password" name="password" placeholder="Enter your password" />
+          </div>
+          <div>
+            <button type="submit" class="btn btn-primary form-submit">Register</button>
           </div>
         </form>
         </p>
-    </div>
+      </div>
 
-<!-- Bootstrap JS -->
-<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
-integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
-crossorigin="anonymous"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
-integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
-crossorigin="anonymous"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
-integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
-crossorigin="anonymous"></script>
+      <!-- Bootstrap JS -->
+      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
 </body>
 
 </html>

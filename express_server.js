@@ -1,12 +1,12 @@
 const express = require('express');
-const getUserByEmail = require('./helpers');
 const cookieSession = require('cookie-session');
 const bcrypt = require('bcryptjs');
+const { getUserByEmail } = require('./helpers');
 
 const app = express();
 const PORT = 3000; // default port 8080 not working; using port 3000 instead
 
-// Configuration 
+// Configuration
 app.set('view engine', 'ejs');
 
 // Middleware
@@ -17,6 +17,8 @@ app.use(cookieSession({
   name: 'cookiemonster',
   keys: ['kadhfiu348978ih3'],
 }));
+
+// Global Variables
 
 const urlDatabase = {
   b6UTxQ: {
@@ -61,8 +63,7 @@ const urlsForUser = (id) => {
     }
   }
   return userURLS;
-}
-
+};
 
 app.get("/", (req, res) => {
   res.send("Hello!");
@@ -76,7 +77,7 @@ app.get("/hello", (req, res) => {
   res.send("<html><body>Hello <b>World</b></body></html>\n");
 });
 
-// GET route for My URLs page 
+// GET route for My URLs page
 
 app.get("/urls", (req, res) => {
   const user_id = req.session.user_id;
@@ -91,7 +92,7 @@ app.get("/urls", (req, res) => {
   return res.render("urls_index", templateVars);
 });
 
-// GET and POST routes for accessing and using New URLs page 
+// GET and POST routes for accessing and using New URLs page
 
 app.get("/urls/new", (req, res) => {
   const user_id = req.session.user_id;
@@ -239,7 +240,7 @@ app.post('/logout', (req, res) => {
   res.redirect('/login');
 });
 
-// POST route to edit/update URLs 
+// POST route to edit/update URLs
 
 app.post('/urls/:id', (req, res) => {
   const user_id = req.session.user_id;
