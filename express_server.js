@@ -6,8 +6,14 @@ const cookieParser = require('cookie-parser');
 app.set("view engine", "ejs");
 
 const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
+  b6UTxQ: {
+    longURL: "https://www.tsn.ca",
+    userID: "aJ48lW"
+  },
+  i3BoGr: {
+    longURL: "https://www.google.com",
+    userID: "aJ48lW"
+  },
 };
 
 const users = {
@@ -35,6 +41,16 @@ const generateRandomString = function(length) {
   return newShortURL;
 };
 
+const urlsForUser = (id) => {
+  const userURLS = {};
+  for (const url in urlDatabase) {
+    if (urlDatabase[url].userID === id) {
+      userURLS[url] = urlDatabase[url].longURL;
+    }
+  }
+  return userURLS;
+}
+
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
@@ -51,40 +67,72 @@ app.get("/hello", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  console.log(req.cookies.user_id);
+  const user_id = req.cookies.user_id;
+
+  if (!user_id) {
+    return res.status(401).send('You are unauthorized to view this page. Please login or register first');
+  }
   const templateVars = {
-    urls: urlDatabase,
+    urls: urlsForUser(user_id),
     user: users[req.cookies.user_id]
   };
-  res.render("urls_index", templateVars);
+  return res.render("urls_index", templateVars);
 });
 
 app.get("/urls/new", (req, res) => {
+  const user_id = req.cookies.user_id;
   const templateVars = {
     user: users[req.cookies.user_id]
   };
+
+  if (!user_id) {
+    return res.redirect('/login');
+  }
   res.render("urls_new", templateVars);
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body); // Log the POST request body to the console
+  const user_id = req.cookies.user_id;
+
+  if (!user_id) {
+    return res.status(401).send('You are not authorized to view this page. Please sign in or register');
+  }
+
   const id = generateRandomString(5); // generates new shortURL
-  urlDatabase[id] = req.body.longURL; // req.body.longURL = new longURL
-  res.redirect(`/urls/${id}`);
+  urlDatabase[id] = {
+    longURL: req.body.longURL, // req.body.longURL = new longURL
+    userID: user_id
+  };
+  return res.redirect(`/urls/${id}`);
 });
 
 app.get("/urls/:id", (req, res) => {
+  const user_id = req.cookies.user_id;
+  const urlDatabaseKeys = urlDatabase[req.params.id];
+
+  if (!user_id) {
+    return res.status(401).send('You are not authorized to view this page. Please sign in or register');
+  }
+  if (user_id !== urlDatabaseKeys.userID) {
+    return res.status(401).send('You are not authorized to view this page');
+  }
   const templateVars = {
     id: req.params.id,
-    longURL: urlDatabase[req.params.id],
+    longURL: urlDatabase[req.params.id].longURL,
     user: users[req.cookies.user_id]
   };
-  res.render('urls_show', templateVars);
+
+  return res.render('urls_show', templateVars);
 });
 
 app.get("/u/:id", (req, res) => {
-  const longURL = urlDatabase[req.params.id];
-  res.redirect(longURL);
+  const longURL = urlDatabase[req.params.id].longURL;
+
+  if (!longURL) {
+    return res.status(404).send('404: URL not found');
+  }
+  return res.redirect(longURL);
+
 });
 
 app.get('/urls/:id', (req, res) => {
@@ -99,17 +147,40 @@ app.get('/urls/:id', (req, res) => {
 
 // URL update route
 app.post('/urls/:id', (req, res) => {
-  const shortURL = req.params.id
-  const longUpdatedURL = req.body.longURL
+  const user_id = req.cookies.user_id;
+  const shortURL = req.params.id;
+  const longUpdatedURL = req.body.longURL;
+  const urlDatabaseKeys = urlDatabase[req.params.id];
 
-  if (!shortURL) return res.status(403).send('Field cannot be empty')
+  console.log("CHECK:", longUpdatedURL);
+  console.log("SHORTURL:", urlDatabase[shortURL]);
+  
 
-  urlDatabase[shortURL] = longUpdatedURL
+  if (!shortURL) {
+    return res.status(403).send('Field cannot be empty');
+
+  } else if (!user_id) {
+    return res.status(401).send('You are not authorized to view this page. Please sign in or register');
+
+  } else if (user_id !== urlDatabaseKeys.userID) {
+    return res.status(401).send('You are not authorized to edit this URL');
+  }
+
+  urlDatabase[shortURL].longURL = longUpdatedURL;
 
   return res.redirect('/urls');
 });
 
 app.post('/urls/:id/delete', (req, res) => {
+  const urlDatabaseKeys = urlDatabase[req.params.id];
+  const user_id = req.cookies.user_id;
+
+  if (!user_id) {
+    return res.status(401).send('You are not authorized to view this page. Please sign in or register');
+    
+  } else if (user_id !== urlDatabaseKeys.userID) {
+    return res.status(401).send('You are not authorized to delete this URL');
+  }
   delete urlDatabase[req.params.id];
   res.redirect('/urls');
 });
@@ -117,14 +188,18 @@ app.post('/urls/:id/delete', (req, res) => {
 // Adding Cookies and Setting Up Login
 
 app.get('/login', (req, res) => {
+  const user_id = req.cookies.user_id;
   const templateVars = {
     user: users[req.cookies.user_id]
   };
+
+  if (user_id) {
+    return res.redirect('/urls');
+  }
   res.render('urls_login', templateVars);
 });
 
 app.post('/login', (req, res) => {
-  const user_id = req.cookies.user_id;
   const email = req.body.email;
   const password = req.body.password;
 
@@ -160,9 +235,15 @@ app.post('/logout', (req, res) => {
 // User Registration
 
 app.get('/register', (req, res) => {
+  const user_id = req.cookies.user_id;
   const templateVars = {
     user: users[req.cookies.user_id]
   };
+
+  if (user_id) {
+    return res.redirect('/urls');
+  }
+
   res.render('urls_register', templateVars);
 });
 
