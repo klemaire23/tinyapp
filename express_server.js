@@ -1,31 +1,32 @@
-const express = require("express");
+const express = require('express');
 const app = express();
-const PORT = 3000; // default port 8080
+const PORT = 3000; // default port 8080 not working; using port 3000 instead
 const cookieParser = require('cookie-parser');
+const bcrypt = require('bcryptjs');
 
-app.set("view engine", "ejs");
+app.set('view engine', 'ejs');
 
 const urlDatabase = {
   b6UTxQ: {
-    longURL: "https://www.tsn.ca",
-    userID: "aJ48lW"
+    longURL: 'https://www.tsn.ca',
+    userID: 'aJ48lW'
   },
   i3BoGr: {
-    longURL: "https://www.google.com",
-    userID: "aJ48lW"
+    longURL: 'https://www.google.com',
+    userID: 'aJ48lW'
   },
 };
 
 const users = {
   userRandomId: {
-    id: "userRandomId",
-    email: "a@a.com",
-    password: "1234"
+    id: 'userRandomId',
+    email: 'a@a.com',
+    password: '$2a$10$raWRPjeXB8LaXK8nDK70YOkkOPYsZD5rAy0PBhBJvOpP.ZDa0ow9i'
   },
   user2RandomID: {
-    id: "user2RandomID",
-    email: "b@b.com",
-    password: "5678"
+    id: 'user2RandomID',
+    email: 'b@b.com',
+    password: '$2a$10$HlzOLaHnzg8PDC7I8ECdseB.QzBpwdqJPM24mlnE9Nid7TGh59GSy'
   },
 };
 
@@ -173,12 +174,15 @@ app.post('/register', (req, res) => {
       return res.status(400).send('This email is already registered');
     }
   }
+  const hashedPassword = bcrypt.hashSync(password, 10);
 
   users[randomID] = {
     id: user_id,
     email,
-    password
+    password: hashedPassword
   };
+
+  console.log(users);
 
   res.cookie('user_id', user_id);
   res.redirect('/urls');
@@ -217,7 +221,7 @@ app.post('/login', (req, res) => {
   }
 
   // does the provided password NOT match the one from the database?
-  if (foundUser.password !== password) {
+  if (!bcrypt.compareSync(password, foundUser.password)) {
     return res.status(403).send('Passwords do not match');
   }
 
