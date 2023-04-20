@@ -4,7 +4,7 @@ const bcrypt = require('bcryptjs');
 const { getUserByEmail } = require('./helpers');
 
 const app = express();
-const PORT = 3000; // default port 8080 not working; using port 3000 instead
+const PORT = 8080; // default port 8080 not working; using port 3000 instead
 
 // Configuration
 app.set('view engine', 'ejs');
@@ -48,7 +48,7 @@ const generateRandomString = function(length) {
   const characters = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
   let newShortURL = '';
 
-  for (let i = 0; i <= length; i++) {
+  for (let i = 0; i < length; i++) {
     const randomGeneration = Math.floor(Math.random() * characters.length);
     newShortURL += characters.charAt(randomGeneration);
   }
@@ -113,7 +113,7 @@ app.post("/urls", (req, res) => {
     return res.status(401).send('You are not authorized to view this page. Please sign in or register');
   }
 
-  const id = generateRandomString(5); // generates new shortURL
+  const id = generateRandomString(6); // generates new shortURL
   urlDatabase[id] = {
     longURL: req.body.longURL, // req.body.longURL = new longURL
     userID: user_id
@@ -168,7 +168,7 @@ app.get('/register', (req, res) => {
 });
 
 app.post('/register', (req, res) => {
-  const user_id = generateRandomString(5);
+  const user_id = generateRandomString(6);
   const email = req.body.email;
   const password = req.body.password;
 
